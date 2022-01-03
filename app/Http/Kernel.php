@@ -1,0 +1,82 @@
+<?php
+
+namespace App\Http;
+
+use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
+
+class Kernel extends HttpKernel
+{
+    /**
+     * The application's global HTTP middleware stack.
+     *
+     * These middleware are run during every request to your application.
+     *
+     * @var array
+     */
+    protected $middleware = [
+        // \App\Http\Middleware\TrustHosts::class,
+        \App\Http\Middleware\TrustProxies::class,
+        \Fruitcake\Cors\HandleCors::class,
+        \App\Http\Middleware\CheckForMaintenanceMode::class,
+        \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
+        \App\Http\Middleware\TrimStrings::class,
+        \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+    ];
+
+    /**
+     * The application's route middleware groups.
+     *
+     * @var array
+     */
+    protected $middlewareGroups = [
+        'web' => [
+            \App\Http\Middleware\EncryptCookies::class,
+            \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class,
+            \Illuminate\Session\Middleware\StartSession::class,
+            // \Illuminate\Session\Middleware\AuthenticateSession::class,
+            \Illuminate\View\Middleware\ShareErrorsFromSession::class,
+            \App\Http\Middleware\VerifyCsrfToken::class,
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        ],
+
+        'api' => [
+            EnsureFrontendRequestsAreStateful::class,
+            'throttle:60,1',
+            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            \App\Http\Middleware\ApiLogs::class,
+        ],
+    ];
+
+    /**
+     * The application's route middleware.
+     *
+     * These middleware may be assigned to groups or used individually.
+     *
+     * @var array
+     */
+    protected $routeMiddleware = [
+        'auth' => \App\Http\Middleware\Authenticate::class,
+        'front_auth' => \App\Http\Middleware\FrontAuthenticate::class,
+        'check_permission' => \App\Http\Middleware\CheckPermission::class,
+        'check_user_status' => \App\Http\Middleware\CheckUserStatus::class,
+        'check_login' => \App\Http\Middleware\CheckLogin::class,
+        'check_admin_login' => \App\Http\Middleware\CheckAdminLogin::class,
+        'auth.basic' => \Illuminate\Auth\Middleware\AuthenticateWithBasicAuth::class,
+        'bindings' => \Illuminate\Routing\Middleware\SubstituteBindings::class,
+        'cache.headers' => \Illuminate\Http\Middleware\SetCacheHeaders::class,
+        'can' => \Illuminate\Auth\Middleware\Authorize::class,
+        'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
+        'password.confirm' => \Illuminate\Auth\Middleware\RequirePassword::class,
+        'signed' => \Illuminate\Routing\Middleware\ValidateSignature::class,
+        'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
+        'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
+        'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
+        'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
+        'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
+        'image-sanitize' => \LaravelAt\ImageSanitize\ImageSanitizeMiddleware::class,
+        'language' => \App\Http\Middleware\Localization::class,
+        'prevent-back-history' => \App\Http\Middleware\PreventBackHistory::class,
+        'api_logs' => \App\Http\Middleware\ApiLogs::class,
+    ];
+}
